@@ -89,7 +89,7 @@ function onGamepadButtonDown(pId, btn) {
     case 7: // R2 (Formerly blend mode, now unused or for future)
       break;
 
-    case 8: break; // Share/Select - formerly tile type
+    case 8: openEmailModal(); break;                     // Share → Invia via Email
 
     case 9: saveSketch(); break;                       // Options/Start
 
