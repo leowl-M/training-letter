@@ -15,7 +15,7 @@ function renderWorld(isExporting) {
       rotate(radians(prot));
       scale(p.sx, p.sy);
       if (p.font) textFont(p.font);
-      drawLetter(p.char, p.colorVal, p.effectIdx, p.weight, p.size, p.effectA, p.effectB, p.font);
+      drawLetter(p.char, p.colorVal, p.effectIdx, p.weight, p.size, p.effectA, p.effectB, p.font, p.fontIdx, p.axes);
       pop();
     }
   }

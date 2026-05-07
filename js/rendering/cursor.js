@@ -16,15 +16,9 @@ function drawWireframeCursor(pId) {
     push();
     translate(startX + i * spacing, 0);
     drawLetter(textToDrop[i], globalColorVal, p.effectIdx,
-               p.weight, p.size, p.effectA, p.effectB, fonts[p.fontIdx]);
+               p.weight, p.size, p.effectA, p.effectB, fonts[p.fontIdx], p.fontIdx, p.axes);
     pop();
   }
-  pop();
-
-  push(); 
-  fill(globalColorVal); noStroke(); 
-  textSize(12); textAlign(CENTER, BOTTOM);
-  text("P" + (pId + 1), p.x, p.y - p.size/2 - 10);
   pop();
 
   if (p.snapGrid) {

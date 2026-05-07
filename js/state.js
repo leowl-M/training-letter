@@ -15,6 +15,8 @@ function initPlayers() {
       size: 150, weight: 0,
       rot: 0, sx: 1.0, sy: 1.0,
       effectA: 0.5, effectB: 0.5,
+      axes: {wt:0,wd:0,sl:0,ct:0,fl:0,rn:0},
+      axesPairIdx: 0,
       snapGrid: false,
       toolMode: 'deform',
       prevButtons: [],

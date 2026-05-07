@@ -18,6 +18,7 @@ function setup() {
   blendModeValues = [BLEND, MULTIPLY, SCREEN, OVERLAY, DIFFERENCE, EXCLUSION];
   
   initPlayers();
+  loadOtFonts();
 
   new ResizeObserver(() => fitCanvas()).observe(main);
   textAlign(CENTER, CENTER);

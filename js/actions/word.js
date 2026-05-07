@@ -17,12 +17,14 @@ function placeWord(pId) {
       char: textToDrop[i],
       x: bx, y: by,
       font: fonts[p.fontIdx],
+      fontIdx: p.fontIdx,
       colorVal: globalColorVal,
       size: p.size, weight: p.weight,
       rot: p.rot, sx: p.sx, sy: p.sy,
       animIdx: p.animIdx,
       effectIdx: p.effectIdx,
       effectA: p.effectA, effectB: p.effectB,
+      axes: {...p.axes},
       placedTime: millis()
     });
   }

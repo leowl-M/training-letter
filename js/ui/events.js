@@ -11,35 +11,17 @@ function toast(msg) {
 }
 
 $('btnSave').addEventListener('click', () => saveSketch());
-$('btnEmail').addEventListener('click', () => openEmailModal());
 $('btnGif').addEventListener('click', () => saveGifExport());
 $('btnClear').addEventListener('click', () => clearAll());
+$('btnEmail').addEventListener('click', () => openEmailModal());
 
-$('email-modal-close').addEventListener('click', closeEmailModal);
-$('email-modal-cancel').addEventListener('click', closeEmailModal);
-
-$('email-modal').addEventListener('click', (e) => {
-  if (e.target === $('email-modal')) closeEmailModal();
-});
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeEmailModal();
-});
-
+$('email-modal-close').addEventListener('click', () => closeEmailModal());
+$('email-modal-cancel').addEventListener('click', () => closeEmailModal());
 $('email-modal-send').addEventListener('click', () => {
   const email  = $('email-input').value.trim();
   const base64 = $('email-modal-preview').dataset.image;
-  if (!email) {
-    const s = $('email-modal-status');
-    s.textContent = 'Inserisci un indirizzo email.';
-    s.className   = 'text-xs text-red-400';
-    return;
-  }
+  if (!email) { $('email-modal-status').textContent = 'Inserisci un indirizzo email.'; return; }
   sendEmail(email, base64);
-});
-
-$('email-input').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') $('email-modal-send').click();
 });
 
 const sidebar = $('sidebar');

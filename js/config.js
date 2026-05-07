@@ -4,10 +4,10 @@ let fonts = []; // populated in preload() with p5.Font objects
 const fontNames  = ['PPFrama Regular', 'PPFrama Black Italic'];
 const fontPaths  = [
   'font/PPFrama-Regular.otf',
-  'font/PPFrama-ExtraboldItalic.otf',
   'font/PPFrama-BlackItalic.otf'
 ];
-const effects    = ['Solido', 'Moduli: Punti', 'Moduli: Geometria', 'Stroke: Tratteggio', 'Op-Art: Onde'];
+const effects    = ['Solido', 'Moduli: Punti', 'Moduli: Geometria', 'Stroke: Tratteggio', 'Op-Art: Onde',
+                    'VT: Contorni', 'VT: Tratteggio', 'VT: Punti', 'VT: Scanline'];
 
 // ── PALETTE (6 colori configurabili) ─────────────────────────────
 const palette = [

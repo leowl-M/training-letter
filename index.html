@@ -12,6 +12,7 @@
   </script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.2/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-neutral-950 text-neutral-200 overflow-hidden text-sm font-sans h-screen antialiased selection:bg-neutral-700">
@@ -92,6 +93,10 @@
             <span id="hud-deform" class="text-[10px] font-mono tabular-nums text-neutral-400">OFF</span>
           </div>
           <div class="flex justify-between items-center mb-2">
+            <span class="text-[10px] text-neutral-500">ASSI</span>
+            <span id="hud-axes" class="text-[10px] font-mono tabular-nums text-neutral-400">WT0 WD0 SL0 CT0 FL0 RN0</span>
+          </div>
+          <div class="flex justify-between items-center mb-2">
             <span class="text-[10px] text-neutral-500">GRUPPI PIAZZATI</span>
             <span id="hud-count" class="text-[10px] font-mono tabular-nums text-neutral-400">0</span>
           </div>
@@ -109,10 +114,17 @@
           <div class="flex justify-between text-[10px]"><span class="text-neutral-400">L2 / R2</span><span class="text-neutral-500">Ruota</span></div>
           <div class="flex justify-between text-[10px]"><span class="text-neutral-400">✕</span><span class="text-neutral-500">Piazza</span></div>
           <div class="flex justify-between text-[10px]"><span class="text-neutral-400">○</span><span class="text-neutral-500">Annulla</span></div>
-          <div class="flex justify-between text-[10px]"><span class="text-neutral-400">△</span><span class="text-neutral-500">Cicla effetto (Geometrico)</span></div>
+          <div class="flex justify-between text-[10px]"><span class="text-neutral-400">△</span><span class="text-neutral-500">Cicla effetto</span></div>
           <div class="flex justify-between text-[10px]"><span class="text-neutral-400">□</span><span class="text-neutral-500">Colore random (Globale)</span></div>
-          <div class="flex justify-between text-[10px]"><span class="text-yellow-400">R3</span><span class="text-neutral-500">Tool Stick Dx: Deform → Effect</span></div>
-          <div class="flex justify-between text-[10px]"><span class="text-neutral-500 pl-3">↳ Levetta Dx</span><span class="text-neutral-500">Modifica A/B o W/H</span></div>
+          <div class="flex justify-between text-[10px]"><span class="text-yellow-400">R3</span><span class="text-neutral-500">Tool: Deform → Effect → Axes</span></div>
+          <div class="flex justify-between text-[10px]"><span class="text-neutral-500 pl-3">↳ in DEFORM</span><span class="text-neutral-500">Scala X / Y</span></div>
+          <div class="flex justify-between text-[10px]"><span class="text-neutral-500 pl-3">↳ in EFFECTS</span><span class="text-neutral-500">Param A (X) / B (Y) effetto</span></div>
+          <div class="flex justify-between text-[10px]"><span class="text-neutral-500 pl-3">↳ in AXES</span><span class="text-neutral-500">Coppia assi attiva</span></div>
+          <div class="flex justify-between text-[10px]"><span class="text-green-400">D-←→</span><span class="text-neutral-500">Cambia coppia assi</span></div>
+          <div class="flex justify-between text-[10px]"><span class="text-neutral-500 pl-3">Coppia 1</span><span class="text-neutral-500">Peso / Larghezza</span></div>
+          <div class="flex justify-between text-[10px]"><span class="text-neutral-500 pl-3">Coppia 2</span><span class="text-neutral-500">Slant / Contrasto</span></div>
+          <div class="flex justify-between text-[10px]"><span class="text-neutral-500 pl-3">Coppia 3</span><span class="text-neutral-500">Flare / Round</span></div>
+          <div class="flex justify-between text-[10px]"><span class="text-red-400">SELECT</span><span class="text-neutral-500">Reset tutti gli assi</span></div>
           <div class="flex justify-between text-[10px]"><span class="text-blue-400">L3</span><span class="text-neutral-500">Cicla font</span></div>
           <div class="flex justify-between text-[10px]"><span class="text-neutral-200">D-↑↓</span><span class="text-neutral-500">Dimensione testo</span></div>
           <div class="flex justify-between text-[10px]"><span class="text-neutral-200">OPTIONS</span><span class="text-neutral-500">Salva PNG</span></div>
