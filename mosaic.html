@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mosaico Artwork</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { neutral: { 850: '#1f1f1f', 950: '#0a0a0a' } } } }
+    }
+  </script>
+</head>
+<body class="bg-neutral-950 text-neutral-200 min-h-screen font-sans antialiased">
+
+  <header class="border-b border-neutral-800 px-6 py-4 flex items-center justify-between">
+    <h1 class="font-bold tracking-widest text-sm uppercase">Training Letter — Mosaico</h1>
+    <a href="index.html" class="text-[10px] text-neutral-500 hover:text-neutral-200 transition-colors tracking-widest uppercase">← Torna al Controller</a>
+  </header>
+
+  <main class="p-6">
+    <div id="grid" class="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-2 space-y-2">
+    </div>
+    <div id="empty" class="hidden text-center text-neutral-600 text-sm mt-20">Nessun artwork ancora.</div>
+    <div id="loader" class="text-center text-neutral-600 text-sm mt-20">Caricamento...</div>
+    <div id="error-msg" class="hidden text-center text-red-500 text-sm mt-20"></div>
+  </main>
+
+  <script>
+    const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:3000'
+      : 'https://your-backend.onrender.com';
+
+    async function loadArtworks() {
+      const grid    = document.getElementById('grid');
+      const loader  = document.getElementById('loader');
+      const empty   = document.getElementById('empty');
+      const errMsg  = document.getElementById('error-msg');
+
+      try {
+        const res  = await fetch(`${BACKEND_URL}/artworks`);
+        const data = await res.json();
+
+        loader.classList.add('hidden');
+
+        if (!res.ok) throw new Error(data.error || 'Errore sconosciuto');
+
+        if (!data.urls || data.urls.length === 0) {
+          empty.classList.remove('hidden');
+          return;
+        }
+
+        console.log('URLs ricevuti:', data.urls);
+
+        for (const url of data.urls) {
+          const img = document.createElement('img');
+          img.src     = url;
+          img.loading = 'lazy';
+          img.alt     = 'artwork';
+          img.className = 'w-full rounded break-inside-avoid mb-2 border border-neutral-800 bg-neutral-900';
+          img.onerror = () => console.error('Immagine non caricata:', url);
+          grid.appendChild(img);
+        }
+      } catch (err) {
+        loader.classList.add('hidden');
+        errMsg.textContent = err.message;
+        errMsg.classList.remove('hidden');
+      }
+    }
+
+    loadArtworks();
+  </script>
+
+</body>
+</html>
