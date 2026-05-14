@@ -29,8 +29,20 @@ function placeWord(pId) {
     });
   }
   
+  const MAX_GROUPS = 50;
   placedGroups.push(patternGroup);
   p.history.push(patternGroup);
+
+  if (placedGroups.length > MAX_GROUPS) {
+    const removed = placedGroups.shift();
+    for (let pl of players) {
+      const hi = pl.history.indexOf(removed);
+      if (hi !== -1) pl.history.splice(hi, 1);
+    }
+    removeFirstGroup(); // instant: shifts snap, reconstructs _off from remaining snaps (GPU only)
+  } else {
+    markNewGroup(); // incremental — no rebuild
+  }
 
   toast(`P${pId+1} Testo piazzato!`);
 }
@@ -42,7 +54,7 @@ function undoLast(pId) {
     // Remove from global placedGroups
     let idx = placedGroups.indexOf(groupToRemove);
     if (idx !== -1) placedGroups.splice(idx, 1);
-    
+    invalidateSnapshot();
     toast(`P${pId+1} Undo`);
   }
 }

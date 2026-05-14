@@ -1,6 +1,30 @@
+@font-face {
+  font-family: 'PPFrama';
+  src: url('font/PPFrama-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'PPFrama';
+  src: url('font/PPFrama-ExtraboldItalic.otf') format('opentype');
+  font-weight: 800;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'PPFrama';
+  src: url('font/PPFrama-BlackItalic.otf') format('opentype');
+  font-weight: 900;
+  font-style: italic;
+}
+
 :root {
-    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  }
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --c-bg:      #141414;
+  --c-cream:   #F7F6EB;
+  --c-yellow:  #CEFF00;
+  --c-blue:    #4A60FF;
+  --c-pink:    #FF3EBA;
+}
   
   * {
     box-sizing: border-box;
@@ -29,15 +53,93 @@
     display: none;
   }
   
+  /* ── Game overlays ─────────────────────────────────────────── */
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 2px,
+      rgba(0,0,0,0.09) 2px,
+      rgba(0,0,0,0.09) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .neon-title {
+    text-shadow:
+      0 0 20px rgba(206,255,0,0.7),
+      0 0 60px rgba(206,255,0,0.35),
+      0 0 120px rgba(206,255,0,0.15);
+  }
+
+  .neon-title-pink {
+    text-shadow:
+      0 0 20px rgba(255,62,186,0.7),
+      0 0 60px rgba(255,62,186,0.35);
+  }
+
+  @keyframes dot-pulse {
+    0%, 100% { opacity: 0.15; transform: scale(0.75); }
+    50%       { opacity: 1;    transform: scale(1.2);  }
+  }
+
+  @keyframes countdown-pop {
+    0%   { opacity: 0; transform: scale(1.5); }
+    25%  { opacity: 1; transform: scale(0.92); }
+    100% { opacity: 1; transform: scale(1);    }
+  }
+  .countdown-pop { animation: countdown-pop 0.45s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+  @keyframes flicker {
+    0%, 91%, 100% { opacity: 1; }
+    92%            { opacity: 0.6; }
+    93%            { opacity: 1; }
+    95%            { opacity: 0.4; }
+    96%            { opacity: 1; }
+  }
+  .flicker { animation: flicker 6s ease-in-out infinite; }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .slide-up { animation: slide-up 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+
+  /* Corner brackets decoration */
+  .game-frame {
+    position: relative;
+  }
+  .game-frame::before,
+  .game-frame::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: var(--c-yellow);
+    border-style: solid;
+    opacity: 0.5;
+  }
+  .game-frame::before {
+    top: 0; left: 0;
+    border-width: 1px 0 0 1px;
+  }
+  .game-frame::after {
+    bottom: 0; right: 0;
+    border-width: 0 1px 1px 0;
+  }
+
   /* Toast */
   #toast {
     opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+    transform: translateX(-50%) translateY(10px);
+    transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out);
   }
   #toast.show {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
   }
   
   /* Canvas Wrapper */

@@ -7,68 +7,133 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      theme: { extend: { colors: { neutral: { 850: '#1f1f1f', 950: '#0a0a0a' } } } }
+      theme: { extend: { colors: { neutral: { 950: '#0a0a0a' } } } }
     }
   </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
+
+    :root {
+      --gap: 8px;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(var(--cols), var(--tile-w));
+      gap: var(--gap);
+    }
+
+    .tile {
+      width: var(--tile-w);
+      height: var(--tile-h);
+      overflow: hidden;
+      background: #111;
+      transform: scale(0);
+      animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @keyframes pop-in {
+      from { transform: scale(0); }
+      to   { transform: scale(1); }
+    }
+  </style>
 </head>
-<body class="bg-neutral-950 text-neutral-200 min-h-screen font-sans antialiased">
+<body>
 
-  <header class="border-b border-neutral-800 px-6 py-4 flex items-center justify-between">
-    <h1 class="font-bold tracking-widest text-sm uppercase">Training Letter — Mosaico</h1>
-    <a href="index.html" class="text-[10px] text-neutral-500 hover:text-neutral-200 transition-colors tracking-widest uppercase">← Torna al Controller</a>
-  </header>
-
-  <main class="p-6">
-    <div id="grid" class="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-2 space-y-2">
-    </div>
-    <div id="empty" class="hidden text-center text-neutral-600 text-sm mt-20">Nessun artwork ancora.</div>
-    <div id="loader" class="text-center text-neutral-600 text-sm mt-20">Caricamento...</div>
-    <div id="error-msg" class="hidden text-center text-red-500 text-sm mt-20"></div>
-  </main>
+  <div id="grid"></div>
 
   <script>
     const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:3000'
       : 'https://your-backend.onrender.com';
 
-    async function loadArtworks() {
-      const grid    = document.getElementById('grid');
-      const loader  = document.getElementById('loader');
-      const empty   = document.getElementById('empty');
-      const errMsg  = document.getElementById('error-msg');
+    const REFRESH_INTERVAL = 10000; // ms
 
+    let knownUrls = new Set();
+
+    const RATIO = 4 / 3;
+    const GAP = 8;
+
+    function computeLayout(total) {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      let bestCols = total;
+      for (let cols = 1; cols <= total; cols++) {
+        const rows = Math.ceil(total / cols);
+        const tileW = (vw - GAP * (cols + 1)) / cols;
+        const tileH = tileW / RATIO;
+        const totalH = tileH * rows + GAP * (rows + 1);
+        if (totalH <= vh) {
+          bestCols = cols;
+          break;
+        }
+      }
+
+      const rows = Math.ceil(total / bestCols);
+      const tileW = (vw - GAP * (bestCols + 1)) / bestCols;
+      const tileH = tileW / RATIO;
+      return { cols: bestCols, tileW: Math.floor(tileW), tileH: Math.floor(tileH) };
+    }
+
+    function addTile(url) {
+      const grid = document.getElementById('grid');
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.dataset.url = url;
+
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = 'artwork';
+      img.loading = 'lazy';
+      img.onerror = () => console.error('Immagine non caricata:', url);
+
+      tile.appendChild(img);
+      grid.appendChild(tile);
+    }
+
+    function applyLayout() {
+      const grid = document.getElementById('grid');
+      const total = knownUrls.size;
+      if (total === 0) return;
+      const { cols, tileW, tileH } = computeLayout(total);
+      grid.style.setProperty('--cols', cols);
+      grid.style.setProperty('--tile-w', tileW + 'px');
+      grid.style.setProperty('--tile-h', tileH + 'px');
+    }
+
+    function updateGrid(urls) {
+      const newUrls = urls.filter(u => !knownUrls.has(u));
+      newUrls.forEach(url => {
+        knownUrls.add(url);
+        addTile(url);
+      });
+      if (newUrls.length > 0) applyLayout();
+    }
+
+    window.addEventListener('resize', applyLayout);
+
+    async function fetchArtworks() {
       try {
         const res  = await fetch(`${BACKEND_URL}/artworks`);
         const data = await res.json();
-
-        loader.classList.add('hidden');
-
-        if (!res.ok) throw new Error(data.error || 'Errore sconosciuto');
-
-        if (!data.urls || data.urls.length === 0) {
-          empty.classList.remove('hidden');
-          return;
-        }
-
-        console.log('URLs ricevuti:', data.urls);
-
-        for (const url of data.urls) {
-          const img = document.createElement('img');
-          img.src     = url;
-          img.loading = 'lazy';
-          img.alt     = 'artwork';
-          img.className = 'w-full rounded break-inside-avoid mb-2 border border-neutral-800 bg-neutral-900';
-          img.onerror = () => console.error('Immagine non caricata:', url);
-          grid.appendChild(img);
-        }
+        if (!res.ok || !data.urls) return;
+        updateGrid(data.urls);
       } catch (err) {
-        loader.classList.add('hidden');
-        errMsg.textContent = err.message;
-        errMsg.classList.remove('hidden');
+        console.error('Fetch error:', err.message);
       }
     }
 
-    loadArtworks();
+    fetchArtworks();
+    setInterval(fetchArtworks, REFRESH_INTERVAL);
   </script>
 
 </body>

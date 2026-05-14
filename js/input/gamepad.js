@@ -12,6 +12,25 @@ const AXES_PAIR_LABELS = ['Peso/Larg', 'Slant/Cont', 'Flare/Round'];
 function handleGamepad() {
   let gamepads = navigator.getGamepads();
 
+  // Non-playing states: only handle start / restart
+  if (typeof gameState !== 'undefined' && gameState !== 'playing') {
+    for (let i = 0; i < gamepads.length; i++) {
+      const gp = gamepads[i];
+      if (!gp) continue;
+      const pb = (players[i] && players[i].prevButtons) || [];
+      for (const btn of [0, 9]) { // ✕ or OPTIONS
+        const pressed = gp.buttons[btn] && gp.buttons[btn].pressed;
+        if (pressed && !pb[btn]) {
+          if (gameState === 'ready') startGame();
+          else if (gameState === 'ended') restartGame();
+        }
+        pb[btn] = pressed;
+      }
+      if (players[i]) players[i].prevButtons = pb;
+    }
+    return;
+  }
+
   for (let i = 0; i < gamepads.length && i < MAX_PLAYERS; i++) {
     let gp = gamepads[i];
     if (!gp) continue;
@@ -72,9 +91,14 @@ function onGamepadButtonDown(pId, btn) {
   let p = players[pId];
   switch (btn) {
 
-    case 0: placeWord(pId); break;                                    // ✕  Piazza
+    case 0: placeWord(pId); sfxPlace(); break;                         // ✕  Piazza
 
-    case 1: undoLast(pId); break;                                     // ○  Annulla
+    case 1: {                                                          // ○  Chiudi modale o Annulla
+      const modal = document.getElementById('email-modal');
+      if (modal && !modal.classList.contains('hidden')) closeEmailModal();
+      else { undoLast(pId); sfxUndo(); }
+      break;
+    }
 
     case 2: {                                                          // □  Colori random
       let bi = Math.floor(Math.random() * palette.length);
@@ -84,12 +108,16 @@ function onGamepadButtonDown(pId, btn) {
       for (let g of placedGroups) for (let item of g.items) item.colorVal = globalColorVal;
       let cp = document.getElementById('colorPicker');
       if (cp) cp.value = globalColorVal;
+      const tf = document.getElementById('timer-fill');
+      if (tf) tf.style.background = globalColorVal;
+      sfxColor();
       toast('Colori aggiornati');
       break;
     }
 
     case 3:                                                            // △  Cicla effetto
       p.effectIdx = (p.effectIdx + 1) % effects.length;
+      sfxEffect();
       toast('P' + (pId+1) + ' ' + effects[p.effectIdx]);
       break;
 
@@ -111,30 +139,34 @@ function onGamepadButtonDown(pId, btn) {
       break;
     }
 
-    case 9: saveSketch(); break;                                       // OPTIONS  Salva PNG
+    case 9: openEmailModal(); break;                                    // OPTIONS  Invia Email
 
     case 10:                                                           // L3  Cicla font
       p.fontIdx = (p.fontIdx + 1) % fontNames.length;
+      sfxFont();
       toast('P' + (pId+1) + ' Font: ' + fontNames[p.fontIdx]);
       break;
 
     case 11: {                                                         // R3  Cicla tool mode
       const idx = (TOOL_MODES.indexOf(p.toolMode) + 1) % TOOL_MODES.length;
       p.toolMode = TOOL_MODES[idx];
+      sfxMode();
       toast('P' + (pId+1) + ' Tool: ' + p.toolMode.toUpperCase());
       break;
     }
 
-    case 12: p.size = constrain(p.size + 10, 10, 1000); break;        // D-↑  Size+
-    case 13: p.size = constrain(p.size - 10, 10, 1000); break;        // D-↓  Size-
+    case 12: p.size = constrain(p.size + 10, 10, 1000); sfxSize(true);  break; // D-↑  Size+
+    case 13: p.size = constrain(p.size - 10, 10, 1000); sfxSize(false); break; // D-↓  Size-
 
     case 14: {                                                         // D-←  Coppia assi prec
       p.axesPairIdx = (p.axesPairIdx - 1 + AXES_PAIRS.length) % AXES_PAIRS.length;
+      sfxAxes();
       toast('P' + (pId+1) + ' Assi: ' + AXES_PAIR_LABELS[p.axesPairIdx]);
       break;
     }
     case 15: {                                                         // D-→  Coppia assi succ
       p.axesPairIdx = (p.axesPairIdx + 1) % AXES_PAIRS.length;
+      sfxAxes();
       toast('P' + (pId+1) + ' Assi: ' + AXES_PAIR_LABELS[p.axesPairIdx]);
       break;
     }

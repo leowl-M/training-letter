@@ -225,21 +225,28 @@ function marchSq(thr, step) {
 
 function segs2polys(segs, eps) {
   if (!segs.length) return [];
-  const used = new Uint8Array(segs.length), polys = [];
-  for (let i=0; i<segs.length; i++) {
+
+  // O(n) via hashmap — old inner loop was O(n²)
+  const k = (x, y) => ((x * 2 + 0.5) | 0) + '|' + ((y * 2 + 0.5) | 0);
+  const epMap = new Map();
+  for (let i = 0; i < segs.length; i++) {
+    const s = segs[i];
+    epMap.set(k(s.x1, s.y1), {i, nx: s.x2, ny: s.y2});
+    epMap.set(k(s.x2, s.y2), {i, nx: s.x1, ny: s.y1});
+  }
+
+  const used = new Uint8Array(segs.length);
+  const polys = [];
+  for (let i = 0; i < segs.length; i++) {
     if (used[i]) continue;
-    const poly = [{x:segs[i].x1, y:segs[i].y1}, {x:segs[i].x2, y:segs[i].y2}];
-    used[i] = 1; let ch = true;
-    while (ch) {
-      ch = false;
-      const tail = poly[poly.length-1];
-      for (let j=0; j<segs.length; j++) {
-        if (used[j]) continue;
-        const d1 = (tail.x-segs[j].x1)**2 + (tail.y-segs[j].y1)**2;
-        const d2 = (tail.x-segs[j].x2)**2 + (tail.y-segs[j].y2)**2;
-        if (d1<eps*eps) { poly.push({x:segs[j].x2, y:segs[j].y2}); used[j]=1; ch=true; break; }
-        if (d2<eps*eps) { poly.push({x:segs[j].x1, y:segs[j].y1}); used[j]=1; ch=true; break; }
-      }
+    used[i] = 1;
+    const poly = [{x: segs[i].x1, y: segs[i].y1}, {x: segs[i].x2, y: segs[i].y2}];
+    while (true) {
+      const tail = poly[poly.length - 1];
+      const e = epMap.get(k(tail.x, tail.y));
+      if (!e || used[e.i]) break;
+      used[e.i] = 1;
+      poly.push({x: e.nx, y: e.ny});
     }
     if (poly.length > 3) polys.push(poly);
   }

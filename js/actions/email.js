@@ -20,6 +20,7 @@ function openEmailModal() {
 
 function closeEmailModal() {
   document.getElementById('email-modal').classList.add('hidden');
+  if (typeof gameState !== 'undefined' && gameState === 'ended') restartGame();
 }
 
 async function sendEmail(email, base64) {
@@ -43,7 +44,11 @@ async function sendEmail(email, base64) {
 
     statusEl.textContent = 'Email inviata!';
     statusEl.className   = 'text-xs text-green-400';
-    setTimeout(closeEmailModal, 1800);
+    setTimeout(() => {
+      document.getElementById('email-modal').classList.add('hidden');
+      if (typeof restartGame === 'function') restartGame();
+      if (typeof startGame === 'function') startGame();
+    }, 1800);
   } catch (err) {
     statusEl.textContent = err.message;
     statusEl.className   = 'text-xs text-red-400';

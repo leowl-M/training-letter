@@ -7,7 +7,7 @@ function initPlayers() {
   players = [];
   for (let i = 0; i < MAX_PLAYERS; i++) {
     players.push({
-      active: i === 0, // Player 1 active by default
+      active: false,
       x: logicalW / 2, y: logicalH / 4,
       selectedChar: 'A',
       charIdx: 0, fontIdx: 0,

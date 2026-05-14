@@ -2,6 +2,7 @@
 function clearAll() {
   placedGroups = [];
   players.forEach(p => p.history = []);
+  invalidateSnapshot();
   toast('Canvas svuotato');
 }
 
@@ -13,6 +14,7 @@ function fitCanvas() {
   if (w === logicalW && h === logicalH) return;
   logicalW = w; logicalH = h;
   resizeCanvas(logicalW, logicalH);
+  invalidateSnapshot();
   players.forEach(p => {
     p.x = constrain(p.x, 0, logicalW);
     p.y = constrain(p.y, 0, logicalH);

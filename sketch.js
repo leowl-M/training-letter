@@ -27,5 +27,6 @@ function setup() {
 
 function draw() {
   handleGamepad();
+  if (typeof updateTimer === 'function') updateTimer();
   renderWorld(isRecordingGif);
 }
